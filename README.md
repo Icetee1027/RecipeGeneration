@@ -1,45 +1,51 @@
 # 食譜生成器 API
 
-這是一個使用 Go 和 Gemini AI 開發的食譜生成器 API。
+這是一個使用 Go 和 Gemini AI 開發的智慧食譜生成器 API 服務。只要提供您家中現有的廚具和食材，API 就能為您生成合適的食譜建議。
 
-## 功能
+## 系統功能
 
-- 接收前端傳送的設備和食材資訊
-- 使用 AI 生成食譜
-- 回傳標準化的食譜格式
+1. **智慧配對**
+   - 根據現有廚具類型生成適合的烹飪方式
+   - 依據食材組合推薦最佳烹飪方案
 
-## 安裝
+2. **彈性輸入**
+   - 支援多種廚具組合
+   - 可接受不同份量的食材清單
+   - 可設定個人烹飪偏好
 
-1. 複製專案：
+3. **標準化輸出**
+   - 清晰的步驟說明
+   - 精確的烹飪時間
+   - 詳細的火候控制
+   - 完整的成品說明
+
+## 使用 Docker 快速部署
+
+### 1. 環境準備
 ```bash
-git clone [repository-url]
-cd recipe-generator
-```
-
-2. 安裝依賴：
-```bash
-go mod download
-```
-
-3. 設置環境變數：
-```bash
+# 複製環境設定檔
 cp .env.example .env
-# 編輯 .env 檔案，填入您的 Gemini API 金鑰
+
+# 編輯 .env 檔案，設定您的 Gemini API 金鑰
+# GEMINI_API_KEY=您的API金鑰
 ```
 
-## 運行
-
+### 2. 建立與運行
 ```bash
-go run main.go
+# 建立 Docker 映像檔
+docker build -t recipe-generator .
+
+# 運行容器（前台模式）
+docker run -p 8080:8080 recipe-generator
+
+# 或使用背景模式運行
+docker run -d -p 8080:8080 recipe-generator
 ```
 
-## API 端點
+### 3. API 使用範例
 
-### 生成食譜
+發送 POST 請求到 `http://localhost:8080/generate-recipe`：
 
-- **URL**: `/generate-recipe`
-- **方法**: `POST`
-- **請求格式**:
 ```json
 {
     "equipment": [
@@ -65,7 +71,7 @@ go run main.go
 }
 ```
 
-- **回應格式**:
+您將收到包含完整食譜的 JSON 回應：
 ```json
 {
     "dish_name": "菜名",
@@ -76,15 +82,23 @@ go run main.go
             "time": "所需時間",
             "temperature": "溫度",
             "description": "描述",
-            "doneness": "熟度（如果適用）"
+            "doneness": "熟度"
         }
     ]
 }
 ```
 
-## 使用 Docker
+### 4. 常見問題排解
 
-```bash
-docker build -t recipe-generator .
-docker run -p 8080:8080 recipe-generator
-``` 
+1. 如果無法連接 API：
+   - 確認容器是否正常運行：`docker ps`
+   - 檢查日誌：`docker logs <container_id>`
+
+2. 如果需要停止服務：
+   - 查看容器 ID：`docker ps`
+   - 停止容器：`docker stop <container_id>`
+
+3. 如果需要更新服務：
+   - 停止舊容器
+   - 重新建立映像檔
+   - 啟動新容器
